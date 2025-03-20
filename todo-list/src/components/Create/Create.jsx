@@ -1,15 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-function Create({ setTodos, todos }) {
+function Create() {
   const [newTodo, setNewTodo] = useState('');
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    if (newTodo.trim() !== '') {
-      setTodos([...todos, newTodo]);
-      setNewTodo('');
-    }
     axios.post("http://localhost:3001/add",{newTodo:newTodo})
     .then(result=>console.log(result))
     .catch(err=>console.log(err))
