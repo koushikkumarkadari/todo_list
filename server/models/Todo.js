@@ -9,5 +9,12 @@ const TodoSchema=new mongoose.Schema({
     },
 })
 
-const TodoModel=mongoose.model("todoList",TodoSchema)
-module.exports=TodoModel
+// User Schema
+const userSchema = new mongoose.Schema({
+    username: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    todoList:[TodoSchema]
+  });
+  
+const User = mongoose.model('User', userSchema);
+module.exports=User

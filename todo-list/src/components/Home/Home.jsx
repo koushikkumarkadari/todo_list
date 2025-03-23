@@ -1,27 +1,55 @@
 import React, { useEffect, useState } from 'react';
 import Create from '../Create/Create';
 import axios from 'axios';
-import { FaEdit, FaTrash, FaCheckCircle, FaRegCircle } from 'react-icons/fa'; // Import icons
+import { FaEdit, FaTrash, FaCheckCircle, FaRegCircle } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 function Home() {
   const [todos, setTodos] = useState([]);
   const [editingTodo, setEditingTodo] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [username, setUsername] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:3001/get`)
-      .then((result) => setTodos(result.data))
-      .catch((err) => console.log(err));
-  }, []);
+    const storedUsername = localStorage.getItem('username');
+    if (storedUsername) {
+      setUsername(storedUsername);
+      fetchTodos(storedUsername);
+    } else {
+      navigate('/login');
+    }
+  }, [navigate]);
 
-  const handleDelete = (id) => {
-    axios
-      .delete(`http://localhost:3001/delete/${id}`)
-      .then(() => {
-        setTodos(todos.filter((todo) => todo._id !== id));
-      })
-      .catch((err) => console.log(err));
+  const fetchTodos = async (username) => {
+    const token = localStorage.getItem('token');
+    try {
+      const result = await axios.get(`http://localhost:3001/get/${username}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setTodos(result.data);
+    } catch (err) {
+      console.error('Error fetching todos:', err);
+      if (err.response && err.response.status === 401) {
+        // Token expired or invalid, redirect to login
+        handleLogout();
+      }
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const token = localStorage.getItem('token');
+    try {
+      await axios.delete(`http://localhost:3001/delete/${username}/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchTodos(username);
+    } catch (err) {
+      console.error('Error deleting todo:', err);
+      if (err.response && err.response.status === 401) {
+        handleLogout();
+      }
+    }
   };
 
   const handleEdit = (todo) => {
@@ -29,19 +57,23 @@ function Home() {
     setIsEditModalOpen(true);
   };
 
-  const handleSaveEdit = (editedTodo) => {
-    axios
-      .put(`http://localhost:3001/edit/${editedTodo._id}`, editedTodo)
-      .then(() => {
-        setTodos(
-          todos.map((todo) =>
-            todo._id === editedTodo._id ? editedTodo : todo
-          )
-        );
-        setIsEditModalOpen(false);
-        setEditingTodo(null);
-      })
-      .catch((err) => console.log(err));
+  const handleSaveEdit = async (editedTodo) => {
+    const token = localStorage.getItem('token');
+    try {
+      await axios.put(
+        `http://localhost:3001/edit/${username}/${editedTodo._id}`,
+        editedTodo,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      fetchTodos(username);
+      setIsEditModalOpen(false);
+      setEditingTodo(null);
+    } catch (err) {
+      console.error('Error editing todo:', err);
+      if (err.response && err.response.status === 401) {
+        handleLogout();
+      }
+    }
   };
 
   const closeEditModal = () => {
@@ -49,23 +81,41 @@ function Home() {
     setEditingTodo(null);
   };
 
-  const handleComplete = (todo) => {
-    axios.put(`http://localhost:3001/update/`+todo._id)
-      .then((result) => console.log(result))
-      .then(() => {
-        setTodos(
-          todos.map((t) =>
-            t._id === todo._id ? { ...t, done: !t.done } : t
-          )
-        );
-      })
-      .catch((err) => console.log(err));
+  const handleComplete = async (todo) => {
+    const token = localStorage.getItem('token');
+    try {
+      await axios.put(
+        `http://localhost:3001/update/${username}/${todo._id}`,
+        { done: !todo.done },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      fetchTodos(username);
+    } catch (err) {
+      console.error('Error completing todo:', err);
+      if (err.response && err.response.status === 401) {
+        handleLogout();
+      }
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username'); // Remove username
+    navigate('/login');
   };
 
   return (
     <div className="bg-gray-900 text-white min-h-screen p-6 flex flex-col">
-      <h1 className="text-3xl font-bold mb-6 text-center">TodoList</h1>
-      <Create />
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">TodoList</h1>
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-md"
+        >
+          Logout
+        </button>
+      </div>
+      <Create username={username} fetchTodos={fetchTodos} />
 
       {todos.length === 0 && (
         <div className="text-center mt-4 text-gray-400">No todos</div>
@@ -112,7 +162,8 @@ function Home() {
           onSave={handleSaveEdit}
           onClose={closeEditModal}
         />
-      )}    </div>
+      )}
+    </div>
   );
 }
 
@@ -125,14 +176,19 @@ function EditTodoModal({ todo, onSave, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center">
-      <div className="bg-white p-8 rounded-md">
+      <div className="bg-black p-8 rounded-md">
         <input
           type="text"
           value={editedTodo.newTodo}
           onChange={handleInputChange}
+          className="text-black m-2 h-10 w-full p-2 rounded-md"
         />
-        <button onClick={() => onSave(editedTodo)}>Save</button>
-        <button onClick={onClose}>Cancel</button>
+        <button className="m-2 bg-green" onClick={() => onSave(editedTodo)}>
+          Save
+        </button>
+        <button className="m-2 bg-red" onClick={onClose}>
+          Cancel
+        </button>
       </div>
     </div>
   );

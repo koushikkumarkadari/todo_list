@@ -1,13 +1,23 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-function Create() {
+function Create({ username, fetchTodos }) {
   const [newTodo, setNewTodo] = useState('');
 
+
   const handleSubmit = (e) => {
-    axios.post("http://localhost:3001/add",{newTodo:newTodo})
-    .then(result=>console.log(result))
-    .catch(err=>console.log(err))
+    const token = localStorage.getItem('token');
+    e.preventDefault(); // Prevent default form submission
+    axios
+      .post(`http://localhost:3001/add/${username}`, { newTodo: newTodo },{
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((result) => {
+        console.log(result);
+        setNewTodo(''); // Clear input after successful add
+        fetchTodos(username); // Refresh todo list
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
