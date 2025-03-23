@@ -7,8 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "postinstall": "npm rebuild bcrypt"
-  },
+    "postinstall": "npm rebuild bcrypt --unsafe-perm" 
+ },
   "keywords": [],
   "author": "",
   "license": "ISC",
