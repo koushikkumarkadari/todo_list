@@ -4,10 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "postinstall": "npm rebuild bcrypt --unsafe-perm" 
+    "start": "node index.js"
  },
   "keywords": [],
   "author": "",
