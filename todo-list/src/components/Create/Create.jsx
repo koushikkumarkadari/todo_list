@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-
+const url="https://todo-list-backend-ya74.onrender.com"
 function Create({ username, fetchTodos }) {
   const [newTodo, setNewTodo] = useState('');
 
@@ -9,7 +9,7 @@ function Create({ username, fetchTodos }) {
     const token = localStorage.getItem('token');
     e.preventDefault(); // Prevent default form submission
     axios
-      .post(`http://localhost:3001/add/${username}`, { newTodo: newTodo },{
+      .post(`${url}/add/${username}`, { newTodo: newTodo },{
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((result) => {

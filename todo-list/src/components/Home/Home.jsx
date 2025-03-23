@@ -3,7 +3,7 @@ import Create from '../Create/Create';
 import axios from 'axios';
 import { FaEdit, FaTrash, FaCheckCircle, FaRegCircle } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
-
+const url="https://todo-list-backend-ya74.onrender.com"
 function Home() {
   const [todos, setTodos] = useState([]);
   const [editingTodo, setEditingTodo] = useState(null);
@@ -24,7 +24,7 @@ function Home() {
   const fetchTodos = async (username) => {
     const token = localStorage.getItem('token');
     try {
-      const result = await axios.get(`http://localhost:3001/get/${username}`, {
+      const result = await axios.get(`${url}/get/${username}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTodos(result.data);
@@ -40,7 +40,7 @@ function Home() {
   const handleDelete = async (id) => {
     const token = localStorage.getItem('token');
     try {
-      await axios.delete(`http://localhost:3001/delete/${username}/${id}`, {
+      await axios.delete(`${url}/delete/${username}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchTodos(username);
@@ -61,7 +61,7 @@ function Home() {
     const token = localStorage.getItem('token');
     try {
       await axios.put(
-        `http://localhost:3001/edit/${username}/${editedTodo._id}`,
+        `${url}/edit/${username}/${editedTodo._id}`,
         editedTodo,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -85,7 +85,7 @@ function Home() {
     const token = localStorage.getItem('token');
     try {
       await axios.put(
-        `http://localhost:3001/update/${username}/${todo._id}`,
+        `${url}/update/${username}/${todo._id}`,
         { done: !todo.done },
         { headers: { Authorization: `Bearer ${token}` } }
       );

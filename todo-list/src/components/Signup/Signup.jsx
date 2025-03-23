@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-
+const url="https://todo-list-backend-ya74.onrender.com"
 function Signup() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -10,7 +10,7 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:3001/signup', { username, password });
+      await axios.post(url+'/signup', { username, password });
       navigate('/login');
     } catch (error) {
       console.error('Signup failed:', error);

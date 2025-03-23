@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-
+const url="https://todo-list-backend-ya74.onrender.com"
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -10,7 +10,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        const response = await axios.post('http://localhost:3001/login', {
+        const response = await axios.post(url+'/login', {
             username,
             password,
         });
