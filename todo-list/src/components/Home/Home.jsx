@@ -3,7 +3,7 @@ import Create from '../Create/Create';
 import axios from 'axios';
 import { FaEdit, FaTrash, FaCheckCircle, FaRegCircle } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
-const url="https://todo-list-backend-ya74.onrender.com"
+const url=process.env.BACKEND_API
 function Home() {
   const [todos, setTodos] = useState([]);
   const [editingTodo, setEditingTodo] = useState(null);
