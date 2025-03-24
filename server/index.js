@@ -11,7 +11,7 @@ dotenv.config(); // Load environment variables from .env file
 const app=express()
 app.use(cors())
 app.use(express.json())
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGODB_URI)
 .then(() => console.log('Connected to MongoDB'))
 
 const authenticateToken = (req, res, next) => {
@@ -168,7 +168,7 @@ app.delete('/delete/:username/:id',authenticateToken, async (req, res) => {
     }
   });
   
-const port=process.env.PORT || 3001
+const port=3001
 app.listen(port,()=>{
     console.log("😎server is running✅")
 })
