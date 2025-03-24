@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-const url=process.env.BACKEND_API
+const url="https://todo-list-backend-ya74.onrender.com"
 function Signup() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');

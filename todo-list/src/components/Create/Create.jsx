@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-const url=process.env.BACKEND_API
+const url="https://todo-list-backend-ya74.onrender.com"
 function Create({ username, fetchTodos }) {
   const [newTodo, setNewTodo] = useState('');
 
